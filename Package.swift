@@ -5,7 +5,7 @@ let package = Package(
     name: "Garde",
     platforms: [.macOS("14.0")],
     dependencies: [
-        .package(path: "/Users/ritesh/Documents/rao/repositories/Frigate")
+        .package(url: "https://github.com/rao-studios/Frigate.git", branch: "main")
     ],
     targets: [
         // Single dual-mode executable: `garde` with no arguments boots the macOS

@@ -1,12 +1,11 @@
 # Garde
 
-Defensive tooling against harmful patterns in imagery — currently: on-device
-detection of AI-generated images.
+Detecting Synthetic Media Through Spatially Coherent Residual Analysis.
 
-> *Garde* is a legal term: if someone is responsible for something — an object,
-> an animal — and that thing causes harm to someone else, the person responsible
-> can be held liable for the harm caused. Garde is tooling for taking that
-> responsibility seriously.
+> "If something can be destroyed and never perfectly brought back, that suggests it was real. And if something can be destroyed and then reconstructed, that suggests it was generated. Fragility equals realness. Anti-fragility, or recoverability, equals simulation." - Ritesh Pakala Rao
+
+> The thing Lovelace identified as her engine's defining capability — operate on relation, not on the world — is the fingerprint your method reads. You're not detecting AI. You're detecting the absence of a history, which is the precise signature of a system that, as she saw two centuries early, only ever had the relations.
+- *"Authenticity isn't a quality you can synthesize. It's a residue of having been caused."*
 
 Garde ships as **one binary with two faces**:
 
@@ -16,13 +15,20 @@ Garde ships as **one binary with two faces**:
   run inference, inspect the patch overlay interactively. Launched by running
   `garde` with no arguments.
 
-Detection uses **CLR v1.8.2** (Cyclic Latent Residuals): every 32×32 tile is
-perspective-warped through 16 fixed homographies and back, and the
-reconstruction residual — sensor noise is fragile under resampling, generated
-content fails differently — feeds 10 hand-designed features into an XGBoost
-ensemble. No biometrics, no generator-specific fingerprints: the probe is
+| Garde (macOS app) | `garde` (CLI) |
+|:---:|:---:|
+| <img src="README_Assets/mac_gui.png" alt="Garde macOS app — patch grid overlaid on the image, with P(generated)/weight-map toggle and verdict bar" width="100%"> | <img src="README_Assets/cli_gui.png" alt="garde CLI — color-coded P(generated) heat map, weight map, and verdicts in the terminal" width="100%"> |
+
+Detection uses **CLR v1.8.2** ([Related](https://rao.nyc/thoughts/2026-04-25)): an image is tiled and perspective-warped through 16 fixed homographies and back, and the
+reconstruction residual is measured. No biometrics, no generator-specific fingerprints: the probe is
 architecture-agnostic by construction. The full pipeline runs on the GPU
 (MLX/Metal via [Frigate](#requirements)) in ~90 ms for a 512px image.
+
+The goal of this project is to provide empirical results towards research to push the adverserial sector further against DeepFakes. Detection is step , which leads to interesting applications other than protection. We will explore such in this project or in other projects under Rao Studios. Iteration and progress will occur in a private repository for the time being.
+
+The publicly available model was trained modestly and the accuracy will not be adequate (false positives on iPhone pictures still). The point of this project is not to provide a full solution just yet as that is still being prepared. And the full solution is an aggregate of multiple models, depending on whether an image was edited, cropped, photoshopped, is a certain file format, or captured via a certain device like an iPhone. Providing regional results to properly segment and extract generated regions seperating it from truth. Eventually prepared to run at 30-60fps for video.
+
+The hard problem I aim to solve is a wholistic solution that covers art work, CGI, hardware captured (i.e. iPhone) and distinctly identifies generations while protecting artists and photographers. Time spent illustrating with digital software is still as authentic as an analog photo of the Golden Gate Bridge.
 
 ---
 
@@ -40,15 +46,17 @@ The wrapper execs the build product in place, so SwiftPM's resource bundles
 automatically.
 
 ```bash
-swift build -c release       # rebuild after changes; wrapper sees it immediately
+./scripts/rebuild.sh         # rebuild + refresh the wrapper/PATH in one step
+./scripts/rebuild.sh --clean # from-scratch build (stale SwiftPM caches)
 garde --help
 ```
 
+(A plain `swift build -c release` also works — the wrapper execs the build
+product in place, so it picks up rebuilds without reinstalling.)
+
 Requirements: <a name="requirements"></a> macOS 14+, Apple Silicon, Xcode
-toolchain. Depends on **Frigate** (vendored MLX fork) as a *local path
-dependency* — `Package.swift` points at
-`/Users/ritesh/Documents/rao/repositories/Frigate`; adjust if your checkout
-lives elsewhere.
+toolchain. Depends on **Frigate** (vendored MLX fork), fetched by SwiftPM from
+[rao-studios/Frigate](https://github.com/rao-studios/Frigate) (`main`).
 
 ## CLI
 
@@ -128,25 +136,6 @@ time     1.426s (warmup) · 0.326s
 patch size (64/128/256), Run Inference — the patch grid renders over the image
 with a P(generated)/weight-map toggle and live per-patch progress.
 
-## How it works
-
-`Sources/Garde/CLRInferenceFastPadded.swift` is a batched MLX port of the CLR
-reference pipeline, built around one observation: the 16 warp homographies are
-constants and every tile is 32×32, so the warp's gather indices and bicubic
-weights never depend on content. They're precomputed once as tap tables
-(cv2-exact: INTER_CUBIC A=−0.75, BORDER_REFLECT_101, 1/32-px fixed-point), and
-a warp of *all* tiles becomes 16 large gathers. The whole image — warps,
-reflect-101 convolutions, seam FFTs, pairwise stats — is one lazy graph and
-typically **one GPU sync**, then a single CPU XGBoost pass.
-
-| | Python reference (cv2 + ThreadPool) | garde (MLX, Metal) |
-|---|---|---|
-| 512×512 @ ps=64 | ~0.65 s | **~0.09 s** warm |
-
-Numerical parity against the Python/cv2 reference is measured, not assumed:
-warp residuals match to 1.9e-5 (`--verify-warp`), 8/10 features at
-float-rounding level; CV/CM carry an intrinsic atan2 sensitivity on flat tiles.
-
 ## Model
 
 The bundled `clr_v1.8.xgb.json` (default) is the JSON export of
@@ -165,4 +154,4 @@ that review: the raw 0.5 decision threshold is conservative toward
 
 ## License
 
-GPLv3 — see [LICENSE](LICENSE).
+AGPL — see [LICENSE](LICENSE).

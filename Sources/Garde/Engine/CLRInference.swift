@@ -1,54 +1,9 @@
 //
-//  CLRInference3_Padded.swift
+//  CLRInference.swift
 //  CLR
 //
 //  Created by Ritesh Pakala Rao on 6/8/26.
 //
-
-/// CLR v1.8.2 inference engine — batched, fidelity-corrected MLX port of clr_inference.py.
-///
-/// Public entry point: `runInferenceFast(image:config:progress:)`. Reuses the existing
-/// `InferenceConfig`, `InferenceResult`, and `PatchInfo` types (do not redeclare them).
-///
-/// ─────────────────────────────────────────────────────────────────────────────
-/// HOW THIS VERSION GETS ITS SPEED (vs the per-tile port it replaces)
-/// ─────────────────────────────────────────────────────────────────────────────
-/// The old port issued 64 single-tile 32×32 `perspectiveWarp`s plus ~10 single-tile
-/// convolutions per tile — ~100k tiny Metal dispatches per image. The GPU starved on
-/// dispatch overhead, which is why Python's CPU thread pool beat it.
-///
-///  1. PRECOMPUTED WARP TAP TABLES. The 16 corner displacements (WARP_DISP) are
-///     constants and every tile is 32×32, so the warp's gather indices and bicubic
-///     weights are content-independent. They are built ONCE per run (host-side,
-///     float64) as `WarpTapTable`s; each warp direction then costs 16 large
-///     `take(axis:1)` gathers over the WHOLE tile batch. The inverse warp's indices
-///     are offset per trial so it samples the trial-stacked forward output in the
-///     same single gather round.
-///
-///  2. EVERYTHING IS BATCHED. All tiles of a patch group go through the warps,
-///     convolutions (batchedFilter2D / batchedSobelGradients / batchedGaussianBlur),
-///     reductions, FFTs, and pairwise stats as single ops on [N, ...] stacks. One
-///     `MLX.eval` per group (≤ EVAL_TILE_BUDGET tiles) forces the whole graph; with
-///     maxDim=512 a typical image is ONE eval.
-///
-///  3. CV2-EXACT WARP FIDELITY (assumption B is gone). The tap tables replicate
-///     cv2.warpPerspective INTER_CUBIC (A = −0.75) + BORDER_REFLECT_101, including
-///     cv2's 1/32-pixel fixed-point coordinate quantization when
-///     `config.cv2QuantizedWarp` is true (default — bit-near parity with the Python
-///     feature pipeline the model was trained on).
-///
-///  4. CV2-EXACT CONV BORDERS. cv2.filter2D / Sobel / GaussianBlur default to
-///     BORDER_REFLECT_101; the previous port zero-padded, corrupting the 4-px edge
-///     strips that feed the seam features. All convs here use reflect-101.
-///
-///  5. CV2-EXACT TEXTURE GRAY. Python computes the texture weight on the uint8
-///     output of cvtColor(RGB2GRAY); `cv2GrayU8` replicates the fixed-point
-///     (R·4899 + G·9617 + B·1868 + 8192) >> 14 rounding exactly in float32.
-///
-/// Remaining (documented) divergences vs Python, all ≪ feature scale: float32 MLX
-/// accumulation where numpy promotes to float64 (corrcoef, np.fft.rfft, means).
-///
-/// Feature order (must match training): FR, LV, CV, CM, CC, CR, SH, SV, SH_S, SV_S.
 
 import Foundation
 import AppKit
