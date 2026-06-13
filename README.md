@@ -155,3 +155,7 @@ that review: the raw 0.5 decision threshold is conservative toward
 ## License
 
 AGPL — see [LICENSE](LICENSE).
+
+> You can reproduce the appearance of experience. You can learn the relations between how experience is expressed and produce outputs that satisfy those relations. But the mark left by actually having lived something — the specific distortion, the contingent scar, the asymmetry that came from nowhere except that it happened — that can't be generated from the inside of a distribution. It can only accumulate from contact with the world.
+
+The forgery is always smoother than the real thing. That's not incidental. That's the tell.
