@@ -5,7 +5,10 @@
 ## User settings
 xcuserdata/
 
+.claude/
 .build/
+.vscode/
+.swiftpm/
 .DS_Store
 
 ## Obj-C/Swift specific
