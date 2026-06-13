@@ -24,11 +24,11 @@ reconstruction residual is measured. No biometrics, no generator-specific finger
 architecture-agnostic by construction. The full pipeline runs on the GPU
 (MLX/Metal via [Frigate](#requirements)) in ~90 ms for a 512px image.
 
-The goal of this project is to provide empirical results towards research to push the adverserial sector further against DeepFakes. Detection is step , which leads to interesting applications other than protection. We will explore such in this project or in other projects under Rao Studios. Iteration and progress will occur in a private repository for the time being.
+The goal of this project is to provide empirical results towards research to push the adverserial sector further against DeepFakes. Detection is step 1, which will lead to interesting applications other than protection. We will explore such in this project or in other projects under Rao Studios. Iteration and progress will occur in a private repository for the time being.
 
 The publicly available model was trained modestly and the accuracy will not be adequate (false positives on iPhone pictures still). The point of this project is not to provide a full solution just yet as that is still being prepared. And the full solution is an aggregate of multiple models, depending on whether an image was edited, cropped, photoshopped, is a certain file format, or captured via a certain device like an iPhone. Providing regional results to properly segment and extract generated regions seperating it from truth. Eventually prepared to run at 30-60fps for video.
 
-The hard problem I aim to solve is a wholistic solution that covers art work, CGI, hardware captured (i.e. iPhone) and distinctly identifies generations while protecting artists and photographers. Time spent illustrating with digital software is still as authentic as an analog photo of the Golden Gate Bridge.
+The hard problem I aim to solve is a wholistic solution that covers art work, CGI, hardware captured (i.e. iPhone) content and distinctly identify generations to protect artists and photographers. Time spent illustrating with digital software is still as authentic as an analog photo of the Golden Gate Bridge.
 
 ---
 
