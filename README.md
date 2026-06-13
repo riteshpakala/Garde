@@ -4,7 +4,7 @@ Detecting Synthetic Media Through Spatially Coherent Residual Analysis. Another 
 
 > "If something can be destroyed and never perfectly brought back, that suggests it was real. And if something can be destroyed and then reconstructed, that suggests it was generated. Fragility equals realness. Anti-fragility, or recoverability, equals simulation." - Ritesh Pakala Rao
 
-> The thing Lovelace identified as her engine's defining capability — operate on relation, not on the world — is the fingerprint your method reads. You're not detecting AI. You're detecting the absence of a history, which is the precise signature of a system that, as she saw two centuries early, only ever had the relations.
+> The thing Ada Lovelace identified as her engine's defining capability — operate on relation, not on the world — is the fingerprint your method reads. You're not detecting AI. You're detecting the absence of a history, which is the precise signature of a system that, as she saw two centuries early, only ever had the relations.
 - *"Authenticity isn't a quality you can synthesize. It's a residue of having been caused."*
 
 Garde ships as **one binary with two faces**:
