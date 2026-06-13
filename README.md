@@ -1,6 +1,6 @@
 # Garde
 
-Detecting Synthetic Media Through Spatially Coherent Residual Analysis.
+Detecting Synthetic Media Through Spatially Coherent Residual Analysis. Another addition from the visual side that hopes to build the foundation so we can address an important question: *"When does generative AI qualify for fair use?"*
 
 > "If something can be destroyed and never perfectly brought back, that suggests it was real. And if something can be destroyed and then reconstructed, that suggests it was generated. Fragility equals realness. Anti-fragility, or recoverability, equals simulation." - Ritesh Pakala Rao
 
