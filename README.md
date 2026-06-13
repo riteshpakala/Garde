@@ -152,10 +152,32 @@ that review: the raw 0.5 decision threshold is conservative toward
 "generated" — borderline scores (|score − 0.5| < ~0.05) should be read as
 *inconclusive*, and a calibration pass is on the roadmap.
 
+## How it works
+
+Most detectors ask what an image shows, or try to learn the fingerprint of a specific generator. This one asks a different question: how was the signal formed?
+
+A signal captured by a physical sensor accumulates from countless independent physical causes — light, optics, sensor noise — with no target it was aiming for. A generated signal is synthesized toward a learned distribution. Those two origins leave measurably different structure in the finest detail of the signal. We read that difference — not the subject, not the model, the formation itself.
+
+### The probe
+
+I apply a controlled, invertible geometric transform to the signal and then invert it, returning in principle to where I started. The round trip is never lossless — some fine structure never survives it. What matters is what fails to survive, and how. Physically-formed detail is fragile and incoherent under this process; synthesized detail, having been generated toward a target in the first place, is comparatively recoverable and coherent. I measure how this residual behaves — as the probe's strength changes, and across different parts of the signal — rather than any single absolute value. That relative framing is what keeps the measurement stable across subject matter and across compression.
+
+### From measurement to verdict
+
+The signal is analyzed in regions rather than as a whole, which lets the method:
+
+- Compare regions that should be statistically independent, and flag the tell-tale over-consistency of fully-synthesized content;
+- Detect the seams where generated content has been composited into otherwise-authentic media;
+- Localize where — and for video, when — a signal is inconsistent in origin, producing a confidence map instead of a single opaque score;
+- Abstain on regions that carry too little signal to judge, rather than guessing.
+
+A lightweight trained classifier combines these regional signals into per-region likelihoods, which are then aggregated — weighted toward the parts of the signal that actually carry information — into an overall determination.
+
+
 ## License
 
 AGPL — see [LICENSE](LICENSE).
 
 > You can reproduce the appearance of experience. You can learn the relations between how experience is expressed and produce outputs that satisfy those relations. But the mark left by actually having lived something — the specific distortion, the contingent scar, the asymmetry that came from nowhere except that it happened — that can't be generated from the inside of a distribution. It can only accumulate from contact with the world.
 
-The forgery is always smoother than the real thing. That's not incidental. That's the tell.
+*The forgery is always smoother than the real thing. That's not incidental. That's the tell... And that's what we are looking for.*
